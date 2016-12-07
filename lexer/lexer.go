@@ -1,5 +1,9 @@
 package lexer
 
+import (
+    "github.com/vohumana/vohumana-gointerpreter/token"
+)
+
 // Lexer is used to read Moneky source 
 type Lexer struct {
     // Monkey source
@@ -41,8 +45,8 @@ func (l *Lexer) peekChar() byte {
 }
 
 // NextToken parses the next token in the input
-func (l *Lexer) NextToken() Token {
-    var tok Token
+func (l *Lexer) NextToken() token.Token {
+    var tok token.Token
 
     l.skipWhitespace()
 
@@ -51,57 +55,57 @@ func (l *Lexer) NextToken() Token {
             if l.peekChar() == '=' {
                 ch := l.char
                 l.readChar()
-                tok = Token{ Type: EQ, Literal: string(ch) + string(l.char)}
+                tok = token.Token{ Type: token.EQ, Literal: string(ch) + string(l.char)}
             } else {
-                tok = newToken(ASSIGN, l.char)
+                tok = token.NewToken(token.ASSIGN, l.char)
             }
         case ';':
-            tok = newToken(SEMICOLON, l.char)
+            tok = token.NewToken(token.SEMICOLON, l.char)
         case '(':
-            tok = newToken(LPAREN, l.char)
+            tok = token.NewToken(token.LPAREN, l.char)
         case ')':
-            tok = newToken(RPAREN, l.char)
+            tok = token.NewToken(token.RPAREN, l.char)
         case ',':
-            tok = newToken(COMMA, l.char)
+            tok = token.NewToken(token.COMMA, l.char)
         case '+':
-            tok = newToken(PLUS, l.char)
+            tok = token.NewToken(token.PLUS, l.char)
         case '-':
-            tok = newToken(MINUS, l.char)
+            tok = token.NewToken(token.MINUS, l.char)
         case '{':
-            tok = newToken(LBRACE, l.char)
+            tok = token.NewToken(token.LBRACE, l.char)
         case '}':
-            tok = newToken(RBRACE, l.char)
+            tok = token.NewToken(token.RBRACE, l.char)
         case '!':
             if l.peekChar() == '=' {
                 ch := l.char
                 l.readChar()
-                tok = Token{ Type: NOT_EQ, Literal: string(ch) + string(l.char)}
+                tok = token.Token{ Type: token.NOT_EQ, Literal: string(ch) + string(l.char)}
             } else {
-                tok = newToken(BANG, l.char)
+                tok = token.NewToken(token.BANG, l.char)
             }
         case '/':
-            tok = newToken(SLASH, l.char)
+            tok = token.NewToken(token.SLASH, l.char)
         case '*':
-            tok = newToken(ASTERISK, l.char)
+            tok = token.NewToken(token.ASTERISK, l.char)
         case '<':
-            tok = newToken(LT, l.char)
+            tok = token.NewToken(token.LT, l.char)
         case '>':
-            tok = newToken(GT, l.char)
+            tok = token.NewToken(token.GT, l.char)
         case 0:
             tok.Literal = ""
-            tok.Type = EOF
+            tok.Type = token.EOF
         default:
             if isLetter(l.char) {
                 tok.Literal = l.readIdentifier()
-                tok.Type = LookupIdentifier(tok.Literal)
+                tok.Type = token.LookupIdentifier(tok.Literal)
                 return tok
             } else if isDigit(l.char) {
-                tok.Type = INT
+                tok.Type = token.INT
                 tok.Literal = l.readNumber()
                 return tok
             }
 
-            tok = newToken(ILLEGAL, l.char)
+            tok = token.NewToken(token.ILLEGAL, l.char)
     }
 
     l.readChar()

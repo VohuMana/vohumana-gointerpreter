@@ -1,4 +1,4 @@
-package lexer
+package token
 
 // TokenType is a string that represents what the type of the token is
 type TokenType string
@@ -52,7 +52,7 @@ const (
 
 )
 
-func newToken(tokenType TokenType, ch byte) Token {
+func NewToken(tokenType TokenType, ch byte) Token {
     return Token {Type: tokenType, Literal: string(ch)}
 }
 
