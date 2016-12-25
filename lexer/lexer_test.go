@@ -29,11 +29,11 @@ func TestNextToken_Simple(t *testing.T) {
         tok := lex.NextToken()
 
         if tok.Type != tt.expectedType {
-            t.Fatal("tests[%d] - tokentype is wrong. Expected=%q, got=%q", i, tt.expectedType, tok.Type)
+            t.Fatalf("tests[%d] - tokentype is wrong. Expected=%q, got=%q", i, tt.expectedType, tok.Type)
         }
 
         if tok.Literal != tt.expectedLiteral {
-            t.Fatal("tests[%d] - literal is wrong. Expected=%q, got=%q", i, tt.expectedLiteral, tok.Literal)
+            t.Fatalf("tests[%d] - literal is wrong. Expected=%q, got=%q", i, tt.expectedLiteral, tok.Literal)
         }
     }
 }
@@ -142,11 +142,11 @@ if (5 < 10) {
         tok := lex.NextToken()
 
         if tok.Type != tt.expectedType {
-            t.Fatal("tests[%d] - tokentype is wrong. Expected=%q, got=%q", i, tt.expectedType, tok.Type)
+            t.Fatalf("tests[%d] - tokentype is wrong. Expected=%q, got=%q", i, tt.expectedType, tok.Type)
         }
 
         if tok.Literal != tt.expectedLiteral {
-            t.Fatal("tests[%d] - literal is wrong. Expected=%q, got=%q", i, tt.expectedLiteral, tok.Literal)
+            t.Fatalf("tests[%d] - literal is wrong. Expected=%q, got=%q", i, tt.expectedLiteral, tok.Literal)
         }
     }
 }
