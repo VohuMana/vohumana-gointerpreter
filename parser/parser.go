@@ -8,6 +8,22 @@ import (
 	"github.com/vohumana/vohumana-gointerpreter/token"
 )
 
+const (
+	_ int = 0
+	LOWEST
+	EQUALS 		// =
+	LESSGREATER // < or > 
+	SUM			// +
+	PRODUCT		// * 
+	PREFIX		// -X or !X
+	CALL		// fooFunc(X)
+)
+
+type (
+	parsePrefixFn func() ast.Expression
+	parseInfixFn func(ast.Expression) ast.Expression
+)
+
 type Parser struct {
 	l *lexer.Lexer
 
@@ -15,6 +31,17 @@ type Parser struct {
 	peekToken token.Token
 
 	errors []string
+
+	prefixParseFns map[token.TokenType]parsePrefixFn
+	infixParseFns map[token.TokenType]parseInfixFn
+}
+
+func (p *Parser) registerPrefix(tokenType token.TokenType, fn parsePrefixFn) {
+	p.prefixParseFns[tokenType] = fn
+}
+
+func (p *Parser) registerInfix(tokenType token.TokenType, fn parseInfixFn) {
+	p.infixParseFns[tokenType] = fn
 }
 
 func New(l *lexer.Lexer) *Parser {
@@ -55,7 +82,7 @@ func (p *Parser) ParseProgram() *ast.Program {
 
 	return program
 }
-
+Left off on page 55;
 func (p *Parser) parseStatement() ast.Statement {
 	switch p.curToken.Type {
 	case token.LET:
@@ -63,7 +90,7 @@ func (p *Parser) parseStatement() ast.Statement {
 	case token.RETURN:
 		return p.parseReturnStatement()
 	default:
-		return nil
+		return p.parseExpressionStatement()
 	}
 }
 
@@ -95,6 +122,29 @@ func (p *Parser) parseReturnStatement() *ast.ReturnStatement {
 
 	// TODO: Skipping expressions until we encounter a semicolon
 	for !p.curTokenIs(token.SEMICOLON) {
+		p.nextToken()
+	}
+
+	return stmt
+}
+
+func (p *Parser) parseExpression(precedence int) ast.Expression {
+	prefix := p.prefixParseFns[p.curToken.Type]
+	if prefix == nil {
+		return nil
+	}
+
+	leftExpr := prefix()
+
+	return leftExpr
+}
+
+func (p *Parser) parseExpressionStatement() *ast.ExpressionStatement {
+	stmt := &ast.ExpressionStatement {Token: p.curToken}
+
+	stmt.Expression = p.parseExpression(LOWEST)
+
+	if p.peekTokenIs(token.SEMICOLON) {
 		p.nextToken()
 	}
 
